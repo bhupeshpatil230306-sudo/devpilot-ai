@@ -145,9 +145,9 @@ Generate complete, production-ready solutions.
 """
 
         response = client.models.generate_content(
-            model="gemini-2.5-flash"
-            contents=tool_prompt,
-        )
+    model="gemini-2.5-flash",
+    contents=tool_prompt,
+)
 
         if not response or not response.text:
             raise HTTPException(
