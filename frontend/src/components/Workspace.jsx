@@ -20,44 +20,64 @@ function Workspace({ selectedTool }) {
   };
 
   const handleGenerate = async () => {
-    if (!prompt.trim()) {
-      setOutput("⚠️ Please enter a prompt.");
-      return;
-    }
+  if (!prompt.trim()) {
+    setOutput("⚠️ Please enter a prompt.");
+    return;
+  }
 
-    setLoading(true);
-    setOutput("");
+  setLoading(true);
+  setOutput("");
 
-    try {
-      const res = await axios.post(
-        "https://devpilot-ai-4gi4.onrender.com/generate",
-        {
-          tool: selectedTool,
-          text: prompt,
-        }
-      );
-
-      setOutput(res.data.response);
-    } catch (error) {
-      console.error(error);
-
-      if (error.response) {
-        setOutput(
-          `❌ Backend Error:\n${JSON.stringify(error.response.data, null, 2)}`
-        );
-      } else if (error.request) {
-        setOutput(
-          "❌ Request reached the backend but no response was received."
-        );
-      } else {
-        setOutput(`❌ ${error.message}`);
+  try {
+    const res = await axios.post(
+      "https://devpilot-ai-4gi4.onrender.com/generate",
+      {
+        tool: selectedTool,
+        text: prompt,
       }
-    } finally {
-      setLoading(false);
-    }
-  };
+    );
 
-  const downloadResponse = () => {
+    console.log("Status:", res.status);
+    console.log("Data:", res.data);
+
+    const responseText =
+      res.data.response ||
+      res.data.result ||
+      res.data.output ||
+      res.data.message ||
+      JSON.stringify(res.data, null, 2);
+
+    setOutput(responseText);
+
+  } catch (error) {
+    console.error("FULL ERROR:", error);
+
+    if (error.response) {
+      console.log("Response:", error.response);
+
+      setOutput(
+        `❌ Backend Error (${error.response.status})\n\n${JSON.stringify(
+          error.response.data,
+          null,
+          2
+        )}`
+      );
+    } else if (error.request) {
+      console.log("Request:", error.request);
+
+      setOutput(
+        "❌ Request sent successfully, but no response was received from the backend."
+      );
+    } else {
+      setOutput(error.message);
+    }
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+    const downloadResponse = () => {
     if (!output) return;
 
     const blob = new Blob([output], {
