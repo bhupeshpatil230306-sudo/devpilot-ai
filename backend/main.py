@@ -145,7 +145,7 @@ Generate complete, production-ready solutions.
 """
 
         response = client.models.generate_content(
-    model="gemini-2.5-flash-lite",
+    model="gemini-2.0-flash"
     contents=tool_prompt,
 )
 
