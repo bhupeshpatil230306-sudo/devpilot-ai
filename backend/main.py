@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
@@ -14,23 +14,36 @@ app = FastAPI()
 # Enable CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=[
+        "http://localhost:5173",
+        "https://devpilot-ai-rose.vercel.app",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Gemini Client
-client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+# Get Gemini API Key
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
+if not GEMINI_API_KEY:
+    raise Exception("GEMINI_API_KEY not found in environment variables.")
+
+# Initialize Gemini Client
+client = genai.Client(api_key=GEMINI_API_KEY)
 
 
+# -----------------------------
 # Request Model
+# -----------------------------
 class Prompt(BaseModel):
     tool: str
     text: str
 
 
+# -----------------------------
 # Home Route
+# -----------------------------
 @app.get("/")
 def home():
     return {
@@ -38,9 +51,12 @@ def home():
     }
 
 
-# AI Route
+# -----------------------------
+# Generate Route
+# -----------------------------
 @app.post("/generate")
 def generate(prompt: Prompt):
+
     try:
 
         tool_prompts = {
@@ -98,7 +114,7 @@ Explain how to execute the script.
         }
 
         tool_prompt = f"""
-{tool_prompts.get(prompt.tool)}
+{tool_prompts.get(prompt.tool, "")}
 
 User Request:
 {prompt.text}
@@ -112,7 +128,7 @@ GENERAL INSTRUCTIONS
 - Never return raw code.
 - End with best practices.
 
-Use these language identifiers:
+Language identifiers:
 
 - Linux Commands → bash
 - Dockerfile Generator → dockerfile
@@ -125,43 +141,28 @@ Use these language identifiers:
 - JavaScript → javascript
 - SQL → sql
 
-Example format:
-
-```bash
-ls -la
-```
-
-```dockerfile
-FROM python:3.12-slim
-WORKDIR /app
-COPY . .
-```
-
-```yaml
-name: CI
-
-on:
-  push:
-    branches:
-      - main
-```
-
-```python
-print("Hello World")
-```
-
-Always follow industry best practices and generate complete, production-ready solutions.
+Generate complete, production-ready solutions.
 """
+
         response = client.models.generate_content(
-            model="gemini-flash-latest",
+            model="gemini-2.5-flash"
             contents=tool_prompt,
         )
+
+        if not response or not response.text:
+            raise HTTPException(
+                status_code=500,
+                detail="Gemini returned an empty response."
+            )
 
         return {
             "response": response.text
         }
 
     except Exception as e:
-        return {
-            "error": str(e)
-        }
+        print("ERROR:", e)
+
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
