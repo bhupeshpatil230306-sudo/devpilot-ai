@@ -30,7 +30,7 @@ function Workspace({ selectedTool }) {
 
     try {
       const res = await axios.post(
-        "http://127.0.0.1:8000/generate",
+        "https://devpilot-ai-4gi4.onrender.com/generate",
         {
           tool: selectedTool,
           text: prompt,
