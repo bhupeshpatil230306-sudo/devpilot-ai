@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
-from google import genai
+from groq import Groq
 import os
 
 # Load environment variables
@@ -23,14 +23,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Get Gemini API Key
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+# Get Groq API Key
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
-if not GEMINI_API_KEY:
-    raise Exception("GEMINI_API_KEY not found in environment variables.")
+if not GROQ_API_KEY:
+    raise Exception("GROQ_API_KEY not found in environment variables.")
 
-# Initialize Gemini Client
-client = genai.Client(api_key=GEMINI_API_KEY)
+# Initialize Groq Client
+client = Groq(api_key=GROQ_API_KEY)
 
 
 # -----------------------------
@@ -144,19 +144,28 @@ Language identifiers:
 Generate complete, production-ready solutions.
 """
 
-        response = client.models.generate_content(
-    model="gemini-2.0-flash",
-    contents=tool_prompt,
-)
+        response = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[
+                {
+                    "role": "user",
+                    "content": tool_prompt
+                }
+            ],
+            temperature=0.7,
+            max_tokens=2048,
+        )
 
-        if not response or not response.text:
+        answer = response.choices[0].message.content
+
+        if not answer:
             raise HTTPException(
                 status_code=500,
-                detail="Gemini returned an empty response."
+                detail="Groq returned an empty response."
             )
 
         return {
-            "response": response.text
+            "response": answer
         }
 
     except Exception as e:
