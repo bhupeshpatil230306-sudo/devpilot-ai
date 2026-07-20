@@ -1,3 +1,4 @@
+import { Sparkles } from "lucide-react";
 import { useState } from "react";
 import axios from "axios";
 import ReactMarkdown from "react-markdown";
@@ -95,57 +96,81 @@ function Workspace({ selectedTool }) {
   };
 
   return (
-    <main className="flex-1 p-8 bg-slate-950 text-white">
-      <h2 className="text-3xl font-bold">
-        🤖 {selectedTool}
-      </h2>
+  <main className="flex-1 bg-slate-900 overflow-y-auto">
+    <div className="max-w-6xl mx-auto px-8 py-10">
 
-      <p className="text-gray-400 mt-2">
-        {descriptions[selectedTool]}
-      </p>
+      <div className="mb-10 border-b border-slate-800 pb-6">
+
+        <h2 className="text-5xl font-bold tracking-tight text-white">
+          {selectedTool}
+        </h2>
+
+        <p className="mt-3 text-lg leading-7 text-slate-400 max-w-3xl">
+          {descriptions[selectedTool]}
+        </p>
+
+      </div>
 
       <textarea
-        value={prompt}
-        onChange={(e) => setPrompt(e.target.value)}
-        placeholder={`Ask AI about ${selectedTool}...`}
-        className="w-full mt-6 h-36 bg-slate-900 border border-slate-700 rounded-xl p-4 outline-none focus:border-cyan-400"
-      />
+  value={prompt}
+  onChange={(e) => setPrompt(e.target.value)}
+  placeholder={`Describe your request...
+
+Try asking:
+• Explain chmod 777
+• Generate Dockerfile for FastAPI
+• Debug this Python error`}
+  className="w-full mt-6 h-52 resize-none rounded-xl border border-slate-700 bg-slate-950 px-5 py-4 text-white placeholder:text-slate-500 outline-none transition-all duration-200 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20"
+/>
 
       <div className="mt-6 flex gap-4 flex-wrap">
 
         <button
-          onClick={handleGenerate}
-          disabled={loading}
-          className="px-6 py-3 bg-cyan-500 hover:bg-cyan-400 rounded-xl font-semibold transition disabled:opacity-50"
-        >
-          {loading ? "Generating..." : "⚡ Generate with AI"}
-        </button>
+  onClick={handleGenerate}
+  disabled={loading}
+  className="px-6 py-3 rounded-xl font-semibold text-white hover:bg-cyan-800 hover:scale-[1.02] active:scale-95 transition-all duration-200 shadow-lg shadow-cyan-500/20 disabled:opacity-50"
+>
+  {loading ? "Generating Response..." : "⚡ Generate Response"}
+</button>
 
         <button
           onClick={() => {
             setPrompt("");
             setOutput("");
           }}
-          className="px-6 py-3 bg-red-500 hover:bg-red-400 rounded-xl font-semibold transition"
+          className="px-6 py-3 bg-red-500 hover:bg-red-400 rounded-xl font-semibold transition-all duration-200 hover:scale-[1.03] active:scale-95"
         >
-          🗑️ Clear
+          Clear Workspace
         </button>
 
         <button
           onClick={downloadResponse}
           disabled={!output}
-          className="px-6 py-3 bg-green-500 hover:bg-green-400 rounded-xl font-semibold transition disabled:opacity-50"
+          className="px-6 py-3 rounded-xl bg-cyan-500 font-semibold text-white hover:bg-cyan-600 hover:scale-[1.02] active:scale-95 transition-all duration-200 shadow-lg shadow-cyan-500/20 disabled:opacity-50"
         >
-          📥 Download
+          Download
         </button>
 
       </div>
 
-      <div className="mt-10 bg-slate-900 border border-slate-700 rounded-xl p-6 min-h-[220px]">
-        <h3 className="text-xl font-semibold mb-4">
-          📄 AI Output
-        </h3>
+      <div className="mt-10 bg-slate-950 border border-slate-800 rounded-xl shadow-2xl shadow-cyan-500/5 hover:border-cyan-500/30 transition-all duration-300 overflow-hidden">
 
+  <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800">
+
+    <div>
+      <h3 className="text-lg font-semibold text-white">
+        AI Response
+      </h3>
+
+      <p className="text-sm text-slate-400">
+        Powered by DevPilot AI
+      </p>
+
+</div>
+  </div>
+  
+
+  <div className="p-8 min-h-[250px] overflow-auto">
         <div className="overflow-auto">
 
           {output ? (
@@ -194,18 +219,33 @@ function Workspace({ selectedTool }) {
               }}
             >
               {output}
-            </ReactMarkdown>
+              </ReactMarkdown>
 
           ) : (
-            <p className="text-gray-400">
-              Your generated result will appear here...
-            </p>
-          )}
+
+            <div className="flex flex-col items-center justify-center py-24 text-center">
+
+  <div className="mb-5">
+    <Sparkles size={52} className="text-cyan-400 mx-auto" />
+  </div>
+
+  <h3 className="text-2xl font-semibold text-white">
+    Ready to Generate
+  </h3>
+
+  <p className="mt-3 text-slate-400 max-w-lg">
+    Describe your task above and DevPilot AI will generate a professional response.
+  </p>
+
+</div>
+)} 
 
         </div>
 
       </div>
+</div>
 
+</div>
     </main>
   );
 }
