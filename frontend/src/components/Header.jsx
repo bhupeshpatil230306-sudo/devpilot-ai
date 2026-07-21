@@ -1,4 +1,4 @@
-import { Sparkles } from "lucide-react";
+import { Sparkles, GitHub } from "lucide-react";
 
 function Header() {
   return (
