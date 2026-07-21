@@ -175,8 +175,9 @@ Try asking:
 
           {output ? (
 
-            <ReactMarkdown
-              components={{
+           <ReactMarkdown
+  className="prose prose-invert max-w-none text-white"
+  components={{
                 code({ inline, className, children, ...props }) {
 
                   const match = /language-(\w+)/.exec(className || "");
@@ -211,7 +212,10 @@ Try asking:
                   }
 
                   return (
-                    <code className={className} {...props}>
+                    <code
+  className={`bg-slate-800 text-cyan-300 px-1 py-0.5 rounded ${className || ""}`}
+  {...props}
+>
                       {children}
                     </code>
                   );
