@@ -1,4 +1,4 @@
-import { Sparkles, Github } from "lucide-react";
+import { Sparkles } from "lucide-react";
 
 function Header() {
   return (
@@ -35,7 +35,7 @@ function Header() {
             rel="noreferrer"
             className="flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white transition-all duration-200 active:scale-95"
           >
-            <Github size={18} />
+            <span className="text-sm font-medium">GitHub</span>
             GitHub
           </a>
 
