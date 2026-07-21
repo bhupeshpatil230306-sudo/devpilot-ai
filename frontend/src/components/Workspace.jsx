@@ -176,7 +176,7 @@ Try asking:
           {output ? (
 
            <ReactMarkdown
-  className="prose prose-invert max-w-none text-white"
+  className="max-w-none text-white"
   components={{
                 code({ inline, className, children, ...props }) {
 
